@@ -1,0 +1,6 @@
+"""conda-tasks: Pixi-style task runner plugin for conda."""
+
+try:
+    from ._version import __version__
+except ImportError:
+    __version__ = "0.0.0.dev0"
