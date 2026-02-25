@@ -29,9 +29,11 @@ class PixiTomlParser(TaskFileParser):
     filenames: ClassVar[tuple[str, ...]] = ("pixi.toml",)
 
     def can_handle(self, path: Path) -> bool:
+        """Return True if *path* is named ``pixi.toml``."""
         return path.name in self.filenames
 
     def parse(self, path: Path) -> dict[str, Task]:
+        """Parse a ``pixi.toml`` file including platform overrides."""
         try:
             data = tomlkit.loads(path.read_text(encoding="utf-8")).unwrap()
         except Exception as exc:
@@ -68,11 +70,13 @@ class PixiTomlParser(TaskFileParser):
         return tasks
 
     def add_task(self, path: Path, name: str, task: Task) -> None:
+        """Not supported — ``pixi.toml`` is read-only."""
         raise NotImplementedError(
             "Writing to pixi.toml is not supported. Use conda-tasks.yml instead."
         )
 
     def remove_task(self, path: Path, name: str) -> None:
+        """Not supported — ``pixi.toml`` is read-only."""
         raise NotImplementedError(
             "Writing to pixi.toml is not supported. Use conda-tasks.yml instead."
         )

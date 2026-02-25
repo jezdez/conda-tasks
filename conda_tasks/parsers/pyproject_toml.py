@@ -33,6 +33,7 @@ class PyprojectTomlParser(TaskFileParser):
     filenames: ClassVar[tuple[str, ...]] = ("pyproject.toml",)
 
     def can_handle(self, path: Path) -> bool:
+        """Return True if *path* is a ``pyproject.toml`` with task definitions."""
         if path.name not in self.filenames:
             return False
         try:
@@ -46,6 +47,7 @@ class PyprojectTomlParser(TaskFileParser):
         )
 
     def parse(self, path: Path) -> dict[str, Task]:
+        """Parse task definitions from ``[tool.conda-tasks]`` or ``[tool.pixi]``."""
         try:
             data = tomlkit.loads(path.read_text(encoding="utf-8")).unwrap()
         except Exception as exc:
@@ -89,11 +91,13 @@ class PyprojectTomlParser(TaskFileParser):
         return tasks
 
     def add_task(self, path: Path, name: str, task: Task) -> None:
+        """Not supported — ``pyproject.toml`` is read-only."""
         raise NotImplementedError(
             "Writing to pyproject.toml is not supported. Use conda-tasks.yml instead."
         )
 
     def remove_task(self, path: Path, name: str) -> None:
+        """Not supported — ``pyproject.toml`` is read-only."""
         raise NotImplementedError(
             "Writing to pyproject.toml is not supported. Use conda-tasks.yml instead."
         )

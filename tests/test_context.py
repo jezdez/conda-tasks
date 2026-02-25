@@ -45,7 +45,10 @@ def test_platform_flag(platform_val, attr):
 @pytest.mark.parametrize(
     ("manifest_path", "expected"),
     [
-        (Path("/some/project/conda-tasks.yml"), str(Path("/some/project/conda-tasks.yml"))),
+        (
+            Path("/some/project/conda-tasks.yml"),
+            str(Path("/some/project/conda-tasks.yml")),
+        ),
         (None, ""),
     ],
     ids=["with-path", "none"],

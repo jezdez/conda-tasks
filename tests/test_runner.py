@@ -12,7 +12,9 @@ def test_run_simple_command(tmp_path):
     shell = SubprocessShell()
     marker = tmp_path / "marker.txt"
     script = tmp_path / "_write.py"
-    script.write_text("from pathlib import Path\nPath('marker.txt').write_text('done')\n")
+    script.write_text(
+        "from pathlib import Path\nPath('marker.txt').write_text('done')\n"
+    )
     exit_code = shell.run("python _write.py", {}, tmp_path)
     assert exit_code == 0
     assert marker.exists()

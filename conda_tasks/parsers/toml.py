@@ -123,9 +123,11 @@ class CondaTasksTomlParser(TaskFileParser):
     filenames: ClassVar[tuple[str, ...]] = ("conda-tasks.toml",)
 
     def can_handle(self, path: Path) -> bool:
+        """Return True if *path* is a recognized ``conda-tasks.toml`` filename."""
         return path.name in self.filenames
 
     def parse(self, path: Path) -> dict[str, Task]:
+        """Parse a ``conda-tasks.toml`` file including platform overrides."""
         try:
             data = tomlkit.loads(path.read_text(encoding="utf-8")).unwrap()
         except Exception as exc:
@@ -162,6 +164,7 @@ class CondaTasksTomlParser(TaskFileParser):
         return tasks
 
     def add_task(self, path: Path, name: str, task: Task) -> None:
+        """Add or update a task in the TOML file, creating it if needed."""
         if path.exists():
             doc = tomlkit.loads(path.read_text(encoding="utf-8"))
         else:
@@ -172,6 +175,7 @@ class CondaTasksTomlParser(TaskFileParser):
         path.write_text(tomlkit.dumps(doc), encoding="utf-8")
 
     def remove_task(self, path: Path, name: str) -> None:
+        """Remove a task from the TOML file by name."""
         doc = tomlkit.loads(path.read_text(encoding="utf-8"))
         tasks_section = doc.get("tasks", {})
         if name not in tasks_section:

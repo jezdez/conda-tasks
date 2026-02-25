@@ -29,6 +29,7 @@ _SEARCH_ORDER: tuple[str, ...] = (
 
 
 def _parser_registry() -> list[TaskFileParser]:
+    """Return all registered parser instances in detection priority order."""
     return [
         CondaTasksYAMLParser(),
         CondaTasksTomlParser(),

@@ -25,10 +25,12 @@ if TYPE_CHECKING:
 
 
 def _cache_root() -> Path:
+    """Return the platform-appropriate root cache directory for conda-tasks."""
     return Path(user_cache_dir("conda-tasks"))
 
 
 def _project_cache_dir(project_root: Path) -> Path:
+    """Return the per-project cache directory, creating it if necessary."""
     key = hashlib.sha256(str(project_root.resolve()).encode()).hexdigest()[:16]
     d = _cache_root() / key
     d.mkdir(parents=True, exist_ok=True)
@@ -36,6 +38,7 @@ def _project_cache_dir(project_root: Path) -> Path:
 
 
 def _cache_file(project_root: Path, task_name: str) -> Path:
+    """Return the JSON cache file path for a specific task."""
     return _project_cache_dir(project_root) / f"{task_name}.json"
 
 
@@ -49,6 +52,7 @@ def _file_stat(path: str) -> tuple[float, int] | None:
 
 
 def _file_sha256(path: str) -> str:
+    """Return the hex SHA-256 digest of the file at *path*."""
     h = hashlib.sha256()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):

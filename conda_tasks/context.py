@@ -22,12 +22,14 @@ class CondaContext:
 
     @property
     def platform(self) -> str:
+        """The conda platform/subdir string, e.g. ``linux-64`` or ``osx-arm64``."""
         from conda.base.context import context
 
         return context.subdir
 
     @property
     def environment_name(self) -> str:
+        """Name of the currently active conda environment, or ``"base"``."""
         from conda.base.context import context
 
         if context.active_prefix:
@@ -41,44 +43,52 @@ class CondaContext:
 
     @property
     def prefix(self) -> str:
+        """Absolute path to the target conda environment prefix."""
         from conda.base.context import context
 
         return str(context.target_prefix)
 
     @property
     def version(self) -> str:
+        """The installed conda version string."""
         from conda import __version__
 
         return __version__
 
     @property
     def manifest_path(self) -> str:
+        """Path to the task definition file, or empty string if unknown."""
         return str(self._manifest_path) if self._manifest_path else ""
 
     @property
     def init_cwd(self) -> str:
+        """The working directory at the time of context creation."""
         return os.getcwd()
 
     @property
     def is_win(self) -> bool:
+        """True when running on Windows."""
         from conda.base.constants import on_win
 
         return on_win
 
     @property
     def is_unix(self) -> bool:
+        """True when running on a Unix-like system (Linux or macOS)."""
         from conda.base.constants import on_win
 
         return not on_win
 
     @property
     def is_linux(self) -> bool:
+        """True when the host platform is Linux."""
         from conda.base.context import context
 
         return context.platform == "linux"
 
     @property
     def is_osx(self) -> bool:
+        """True when the host platform is macOS."""
         from conda.base.context import context
 
         return context.platform == "osx"

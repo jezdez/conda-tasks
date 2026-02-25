@@ -41,6 +41,11 @@ class SubprocessShell(ShellBackend):
         conda_prefix: Path | None = None,
         clean_env: bool = False,
     ) -> int:
+        """Execute *cmd* and return the process exit code.
+
+        When *conda_prefix* is given the command runs inside an activated
+        conda environment.  Otherwise it runs directly in the current shell.
+        """
         run_env = self._build_env(env, clean_env)
 
         if isinstance(cmd, list):
@@ -51,6 +56,11 @@ class SubprocessShell(ShellBackend):
         return self._run_direct(cmd, run_env, cwd)
 
     def _build_env(self, extra: dict[str, str], clean: bool) -> dict[str, str]:
+        """Build the environment variable mapping for a subprocess.
+
+        When *clean* is True only a minimal set of system variables is
+        kept (``PATH``, ``HOME``, etc.). *extra* variables are always merged in.
+        """
         if clean:
             base: dict[str, str] = {}
             for key in (
@@ -75,6 +85,7 @@ class SubprocessShell(ShellBackend):
         return base
 
     def _run_direct(self, cmd: str, env: dict[str, str], cwd: Path) -> int:
+        """Run *cmd* in the native shell without conda activation."""
         shell_cmd = self._shell_command(cmd)
         result = subprocess.run(shell_cmd, env=env, cwd=str(cwd))
         return result.returncode
@@ -86,6 +97,11 @@ class SubprocessShell(ShellBackend):
         cwd: Path,
         conda_prefix: Path,
     ) -> int:
+        """Run *cmd* inside an activated conda environment at *conda_prefix*.
+
+        Uses ``conda.utils.wrap_subprocess_call`` to generate an
+        activation wrapper script, which is cleaned up after execution.
+        """
         from conda.base.context import context
         from conda.utils import wrap_subprocess_call
 
@@ -112,6 +128,7 @@ class SubprocessShell(ShellBackend):
 
     @staticmethod
     def _shell_command(cmd: str) -> list[str]:
+        """Wrap *cmd* in the platform-appropriate shell invocation."""
         if on_win:
             return ["cmd", "/d", "/c", cmd]
         return [os.environ.get("SHELL", "/bin/sh"), "-c", cmd]

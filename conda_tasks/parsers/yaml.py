@@ -84,9 +84,11 @@ class CondaTasksYAMLParser(TaskFileParser):
     filenames: ClassVar[tuple[str, ...]] = ("conda-tasks.yml", "conda-tasks.yaml")
 
     def can_handle(self, path: Path) -> bool:
+        """Return True if *path* is a recognized ``conda-tasks.yml`` filename."""
         return path.name in self.filenames
 
     def parse(self, path: Path) -> dict[str, Task]:
+        """Parse a ``conda-tasks.yml`` file and return its task definitions."""
         try:
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         except yaml.YAMLError as exc:
@@ -98,6 +100,7 @@ class CondaTasksYAMLParser(TaskFileParser):
         return normalize_tasks(raw_tasks)
 
     def add_task(self, path: Path, name: str, task: Task) -> None:
+        """Add or update a task in the YAML file, creating it if needed."""
         if path.exists():
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         else:
@@ -110,6 +113,7 @@ class CondaTasksYAMLParser(TaskFileParser):
         )
 
     def remove_task(self, path: Path, name: str) -> None:
+        """Remove a task from the YAML file by name."""
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         tasks_section = data.get("tasks", {})
         if name not in tasks_section:

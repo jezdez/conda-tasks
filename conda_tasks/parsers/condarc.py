@@ -60,6 +60,7 @@ class CondaRCParser(TaskFileParser):
     filenames: ClassVar[tuple[str, ...]] = (".condarc",)
 
     def can_handle(self, path: Path) -> bool:
+        """Return True if *path* is a ``.condarc`` with task definitions."""
         if path.name not in self.filenames:
             return False
         try:
@@ -73,6 +74,7 @@ class CondaRCParser(TaskFileParser):
         return bool(isinstance(section, dict) and section.get("tasks"))
 
     def parse(self, path: Path) -> dict[str, Task]:
+        """Parse tasks from condarc via the config API, falling back to direct YAML."""
         raw_tasks = _raw_tasks_from_condarc()
         if not raw_tasks:
             try:
@@ -89,6 +91,7 @@ class CondaRCParser(TaskFileParser):
         return normalize_tasks(raw_tasks)
 
     def add_task(self, path: Path, name: str, task: Task) -> None:
+        """Add or update a task under ``plugins.conda_tasks.tasks`` in ``.condarc``."""
         if path.exists():
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         else:
@@ -112,6 +115,7 @@ class CondaRCParser(TaskFileParser):
         )
 
     def remove_task(self, path: Path, name: str) -> None:
+        """Remove a task from the ``.condarc`` file by name."""
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         plugins = data.get("plugins", {})
         section = plugins.get("conda_tasks", plugins.get("conda-tasks", {})).get(
