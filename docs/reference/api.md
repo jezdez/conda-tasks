@@ -1,50 +1,43 @@
-# API Reference
+# API reference
 
-```{eval-rst}
-.. automodule:: conda_tasks.models
-   :members:
-   :undoc-members:
+```{toctree}
+:hidden:
 
-.. automodule:: conda_tasks.graph
-   :members:
-
-.. automodule:: conda_tasks.template
-   :members:
-
-.. automodule:: conda_tasks.cache
-   :members:
-
-.. automodule:: conda_tasks.runner
-   :members:
-
-.. automodule:: conda_tasks.context
-   :members:
-
-.. automodule:: conda_tasks.exceptions
-   :members:
-   :show-inheritance:
-
-.. automodule:: conda_tasks.parsers
-   :members:
-
-.. automodule:: conda_tasks.parsers.base
-   :members:
-
-.. automodule:: conda_tasks.parsers.yaml
-   :members:
-
-.. automodule:: conda_tasks.parsers.toml
-   :members:
-
-.. automodule:: conda_tasks.parsers.pixi_toml
-   :members:
-
-.. automodule:: conda_tasks.parsers.pyproject_toml
-   :members:
-
-.. automodule:: conda_tasks.parsers.condarc
-   :members:
-
-.. automodule:: conda_tasks.parsers.normalize
-   :members:
+api/models
+api/parsers
+api/execution
+api/context
 ```
+
+::::{grid} 2
+:gutter: 3
+
+:::{grid-item-card} Models
+:link: api/models
+:link-type: doc
+
+Task definitions, arguments, dependencies, overrides, and exceptions.
+:::
+
+:::{grid-item-card} Parsers
+:link: api/parsers
+:link-type: doc
+
+File format parsers, detection logic, and normalization helpers.
+:::
+
+:::{grid-item-card} Execution
+:link: api/execution
+:link-type: doc
+
+DAG resolution, shell backends, caching, and template rendering.
+:::
+
+:::{grid-item-card} Context
+:link: api/context
+:link-type: doc
+
+Template variables (`conda.*` / `pixi.*`) and environment introspection.
+:::
+
+::::
