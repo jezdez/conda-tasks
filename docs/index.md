@@ -1,6 +1,6 @@
 # conda-tasks
 
-Pixi-style task runner plugin for conda.
+The missing task runner for conda, inspired by [pixi](https://pixi.sh).
 
 ```bash
 conda task run test     # builds first, then tests

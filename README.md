@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/jezdez/conda-tasks)](https://github.com/jezdez/conda-tasks/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%E2%80%933.14-blue)](https://github.com/jezdez/conda-tasks)
 
-A task runner for conda, inspired by [pixi](https://pixi.sh)'s task system.
+The missing task runner for conda, inspired by [pixi](https://pixi.sh).
 
 Define tasks in your project, wire up dependencies between them, and run
 everything through `conda task`. Works with your existing conda environments

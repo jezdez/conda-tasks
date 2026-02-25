@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "conda-tasks"
-description = "Pixi-style task runner plugin for conda."
+description = "The missing task runner for conda, inspired by pixi."
 readme = "README.md"
 authors = [{ name = "Jannis Leidel" }]
 license = { file = "LICENSE" }
