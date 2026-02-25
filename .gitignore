@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+
+# Editors / IDE
+.vscode/
+.idea/
+
+# Pixi
+.pixi/
+
+# Docs build
+docs/_build/
+
+# Generated version file
+conda_tasks/_version.py
