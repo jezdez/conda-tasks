@@ -82,6 +82,67 @@ the task-running side:
 - Conda integration: tasks can target specific conda environments using
   `-n`/`-p` flags, matching conda's standard interface.
 
+## Prior art
+
+The idea of running commands from a project definition is not new in the
+conda ecosystem. Several tools have explored this space, each with a
+different scope.
+
+### anaconda-project
+
+[anaconda-project](https://github.com/Anaconda-Platform/anaconda-project)
+was one of the first tools to combine conda environments with project
+commands. Its `anaconda-project.yml` lets you define named commands,
+platform-specific variants (`unix:` / `windows:`), and service
+dependencies. Running `anaconda-project run` automatically sets up the
+environment before executing. It focuses on reproducible project
+launchers rather than build-style task graphs -- there is no way to
+express dependencies between commands, no caching, and no templating.
+
+### conda-project
+
+[conda-project](https://github.com/conda-incubator/conda-project) is a
+community successor to anaconda-project, maintained under conda-incubator.
+It modernizes the workflow with `conda-lock` integration and a
+`conda project run` command. Like its predecessor, it centers on
+environment management and command execution rather than task
+orchestration -- commands cannot depend on each other.
+
+### conda-execute
+
+[conda-execute](https://github.com/pelson/conda-execute) takes a
+different approach: embed environment requirements directly in a script's
+header comments, then run it in an auto-created temporary environment.
+It is aimed at one-off scripts rather than multi-step project workflows.
+
+### conda run
+
+Conda itself ships `conda run -n <env> <command>`, which activates an
+environment and runs a single command. It is the low-level primitive that
+conda-tasks builds on, but it has no concept of task definitions,
+dependencies, or caching.
+
+### General-purpose Python task runners
+
+Tools like [tox](https://tox.wiki), [nox](https://nox.thea.codes),
+[invoke](https://www.pyinvoke.org), and
+[hatch](https://hatch.pypa.io) each provide ways to define and run
+project tasks. tox and nox focus on test-matrix automation with
+virtualenvs; invoke is a general-purpose Make replacement; hatch offers
+scripts and environment matrices for Python projects. None of them
+integrate directly with conda environments or conda's plugin system.
+
+### pixi
+
+[pixi](https://pixi.sh) by [prefix.dev](https://prefix.dev) was the
+first tool to ship a full-featured task runner tightly integrated with
+conda package management: task dependencies, platform overrides,
+input/output caching, template variables, and task arguments. Its task
+system is the direct inspiration for conda-tasks. The key difference is
+that pixi manages both environments and tasks, while conda-tasks
+deliberately handles only the task-running side and leaves environment
+management to conda.
+
 ## Acknowledgements
 
 conda-tasks would not exist without the work of the
@@ -91,3 +152,9 @@ template variables, and the overall developer experience -- comes directly
 from their implementation. We are grateful for their contribution to the
 conda ecosystem and for setting the bar on what a project task runner
 should look like.
+
+The [anaconda-project](https://github.com/Anaconda-Platform/anaconda-project)
+and [conda-project](https://github.com/conda-incubator/conda-project)
+teams explored running commands from project manifests long before
+conda-tasks existed. Their work informed how project-level automation
+fits into the conda ecosystem.
