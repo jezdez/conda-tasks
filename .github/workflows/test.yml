@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ["test-py310", "test-py311", "test-py312", "test-py313"]
+        python: ["test-py310", "test-py311", "test-py312", "test-py313", "test-py314"]
     steps:
       - uses: actions/checkout@v4
 
