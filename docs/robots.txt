@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jezdez.github.io/conda-tasks/sitemap.xml
