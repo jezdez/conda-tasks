@@ -1,0 +1,186 @@
+"""Tests for conda_tasks.runner."""
+
+from __future__ import annotations
+
+import pytest
+from conda.base.constants import on_win
+
+from conda_tasks.runner import SubprocessShell
+
+
+def test_run_simple_command(tmp_path):
+    shell = SubprocessShell()
+    marker = tmp_path / "marker.txt"
+    cmd = f'echo done > "{marker}"'
+    exit_code = shell.run(cmd, {}, tmp_path)
+    assert exit_code == 0
+    assert marker.exists()
+
+
+@pytest.mark.parametrize("code", [0, 1, 42])
+def test_run_returns_exit_code(tmp_path, code):
+    shell = SubprocessShell()
+    exit_code = shell.run(f"exit {code}", {}, tmp_path)
+    assert exit_code == code
+
+
+def test_run_with_env(tmp_path):
+    shell = SubprocessShell()
+    marker = tmp_path / "envtest.txt"
+    if on_win:
+        cmd = 'echo %MY_VAR% > "' + str(marker) + '"'
+    else:
+        cmd = f'echo "$MY_VAR" > "{marker}"'
+    exit_code = shell.run(cmd, {"MY_VAR": "hello123"}, tmp_path)
+    assert exit_code == 0
+    content = marker.read_text().strip()
+    assert "hello123" in content
+
+
+def test_run_with_cwd(tmp_path):
+    subdir = tmp_path / "subdir"
+    subdir.mkdir()
+    shell = SubprocessShell()
+    cmd = "cd" if on_win else "pwd"
+    exit_code = shell.run(cmd, {}, subdir)
+    assert exit_code == 0
+
+
+@pytest.mark.parametrize(
+    ("extra_env", "clean", "expected_key", "expected_val"),
+    [
+        ({}, True, "PATH", None),
+        ({"FOO": "bar"}, True, "FOO", "bar"),
+        ({"FOO": "bar"}, False, "FOO", "bar"),
+    ],
+    ids=["clean-has-path", "clean-with-extras", "non-clean-with-extras"],
+)
+def test_build_env(extra_env, clean, expected_key, expected_val):
+    shell = SubprocessShell()
+    env = shell._build_env(extra_env, clean=clean)
+    assert expected_key in env
+    if expected_val is not None:
+        assert env[expected_key] == expected_val
+    if clean:
+        allowed = {
+            "PATH",
+            "HOME",
+            "USER",
+            "LOGNAME",
+            "SHELL",
+            "TERM",
+            "LANG",
+            "SYSTEMROOT",
+            "COMSPEC",
+            "TEMP",
+            "TMP",
+        } | set(extra_env)
+        for key in env:
+            assert key in allowed
+
+
+def test_list_command(tmp_path):
+    shell = SubprocessShell()
+    exit_code = shell.run(["echo", "hello"], {}, tmp_path)
+    assert exit_code == 0
+
+
+@pytest.mark.skipif(on_win, reason="Unix-only test")
+def test_shell_command_unix():
+    result = SubprocessShell._shell_command("echo hi")
+    assert result[-1] == "echo hi"
+    assert "-c" in result
+
+
+@pytest.mark.skipif(not on_win, reason="Windows-only test")
+def test_shell_command_windows():
+    result = SubprocessShell._shell_command("echo hi")
+    assert result[0] == "cmd"
+    assert "/c" in result
+
+
+def test_run_in_env(tmp_path, monkeypatch):
+    """_run_in_env delegates to wrap_subprocess_call."""
+    import subprocess as subprocess_mod
+    import types
+
+    import conda.base.context
+    import conda.utils
+
+    script_file = tmp_path / "activate.sh"
+    script_file.write_text("#!/bin/sh\n")
+
+    fake_context = types.SimpleNamespace(
+        root_prefix=str(tmp_path / "root"),
+        dev=False,
+    )
+
+    wrap_calls: list[tuple] = []
+
+    def fake_wrap(*args):
+        wrap_calls.append(args)
+        return (str(script_file), ["echo", "hi"])
+
+    monkeypatch.setattr(conda.base.context, "context", fake_context)
+    monkeypatch.setattr(conda.utils, "wrap_subprocess_call", fake_wrap)
+    monkeypatch.setattr(
+        subprocess_mod,
+        "run",
+        lambda *a, **kw: types.SimpleNamespace(returncode=0),
+    )
+
+    shell = SubprocessShell()
+    code = shell._run_in_env("echo hi", {}, tmp_path, tmp_path / "envs/test")
+
+    assert code == 0
+    assert len(wrap_calls) == 1
+
+
+def test_run_in_env_cleans_up_script(tmp_path, monkeypatch):
+    """_run_in_env removes the wrapper script after execution."""
+    import subprocess as subprocess_mod
+    import types
+
+    import conda.base.context
+    import conda.utils
+
+    script_file = tmp_path / "wrapper_script.sh"
+    script_file.write_text("#!/bin/sh\n")
+
+    fake_context = types.SimpleNamespace(
+        root_prefix=str(tmp_path),
+        dev=False,
+    )
+
+    monkeypatch.setattr(conda.base.context, "context", fake_context)
+    monkeypatch.setattr(
+        conda.utils,
+        "wrap_subprocess_call",
+        lambda *a: (str(script_file), ["echo", "hi"]),
+    )
+    monkeypatch.setattr(
+        subprocess_mod,
+        "run",
+        lambda *a, **kw: types.SimpleNamespace(returncode=0),
+    )
+
+    shell = SubprocessShell()
+    shell._run_in_env("echo hi", {}, tmp_path, tmp_path / "env")
+
+    assert not script_file.exists()
+
+
+def test_run_delegates_to_env_when_prefix_given(tmp_path, monkeypatch):
+    """SubprocessShell.run calls _run_in_env when conda_prefix is set."""
+    called_with: list[tuple] = []
+
+    def fake_run_in_env(cmd, env, cwd, conda_prefix):
+        called_with.append((cmd, env, cwd, conda_prefix))
+        return 0
+
+    shell = SubprocessShell()
+    monkeypatch.setattr(shell, "_run_in_env", fake_run_in_env)
+    code = shell.run("echo hi", {}, tmp_path, conda_prefix=tmp_path / "env")
+
+    assert code == 0
+    assert len(called_with) == 1
