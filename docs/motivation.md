@@ -90,7 +90,7 @@ different scope.
 
 ### anaconda-project
 
-[anaconda-project](https://github.com/Anaconda-Platform/anaconda-project)
+[anaconda-project](https://github.com/anaconda/anaconda-project)
 was one of the first tools to combine conda environments with project
 commands. Its `anaconda-project.yml` lets you define named commands,
 platform-specific variants (`unix:` / `windows:`), and service
@@ -153,7 +153,7 @@ from their implementation. We are grateful for their contribution to the
 conda ecosystem and for setting the bar on what a project task runner
 should look like.
 
-The [anaconda-project](https://github.com/Anaconda-Platform/anaconda-project)
+The [anaconda-project](https://github.com/anaconda/anaconda-project)
 and [conda-project](https://github.com/conda-incubator/conda-project)
 teams explored running commands from project manifests long before
 conda-tasks existed. Their work informed how project-level automation
