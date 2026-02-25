@@ -72,6 +72,10 @@
   (root `tests/conftest.py` for cross-cutting fixtures, subdirectory
   `conftest.py` for module-specific ones).
 
+- Coverage is measured with `pytest-cov`. Thresholds and exclusions are
+  configured in `pyproject.toml` under `[tool.coverage.*]`. Run
+  `pixi run -e <test-env> test-cov` to generate a coverage report.
+
 ## Conda integration
 
 - Follow standard conda CLI patterns: use `-n`/`--name` and
@@ -96,3 +100,17 @@
 - Key difference from pixi must be documented prominently:
   `conda-tasks` is a task runner only — it does not install dependencies
   or manage environments.
+
+- Avoid excessive bold and italic in prose, list items, and headings.
+  Don't bold every list item or key term — let the text speak for
+  itself. In docstrings, use `*param*` for parameter names (standard
+  Sphinx convention) but avoid bold elsewhere.
+
+- Keep `sphinx-design` tab labels short. Use "YAML" / "TOML" instead
+  of full filenames like "conda-tasks.yml" / "conda-tasks.toml" when
+  the tab content already identifies the file. This prevents tab
+  overflow on narrow viewports.
+
+- The API reference is split into focused sub-pages by concern (models,
+  parsers, execution, context) rather than a single monolithic page.
+  The index uses `sphinx-design` grid cards for navigation.

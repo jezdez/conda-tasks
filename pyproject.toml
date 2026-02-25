@@ -24,6 +24,7 @@ requires-python = ">=3.10"
 dependencies = [
   "conda >=24.7",
   "jinja2 >=3.0",
+  "platformdirs >=3.0",
   "pyyaml >=6.0",
   "tomlkit >=0.13",
 ]
@@ -88,7 +89,6 @@ test-cov = "python -m pytest --cov --cov-report=term-missing --cov-report=html"
 [tool.pixi.feature.test.dependencies]
 pytest = ">=7.4"
 pytest-cov = ">=6.0"
-pytest-mock = ">=3.12"
 
 [tool.pixi.feature.py310.dependencies]
 python = "3.10.*"
