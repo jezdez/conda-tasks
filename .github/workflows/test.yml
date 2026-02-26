@@ -26,12 +26,8 @@ jobs:
           activate-environment: test
           channels: conda-forge
 
-      - name: Install conda-pypi (dev) in base
-        run: |
-          conda install -n base -y -c conda-forge \
-            pip conda-index packaging platformdirs unearth python-build python-installer
-          conda run -n base pip install --no-deps --no-build-isolation \
-            git+https://github.com/conda/conda-pypi.git
+      - name: Install conda-pypi
+        run: conda install -n base -y -c conda-forge "conda-pypi>=0.4"
 
       - name: Install test dependencies
         run: conda install -y pytest pytest-cov
