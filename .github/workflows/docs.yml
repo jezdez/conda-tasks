@@ -30,6 +30,9 @@ jobs:
           activate-environment: docs
           channels: conda-forge
 
+      - name: Install conda-pypi
+        run: conda install -n base -y -c conda-forge conda-pypi
+
       - name: Install docs dependencies
         run: |
           conda install -y \
@@ -38,7 +41,7 @@ jobs:
             sphinx-reredirects sphinx-sitemap
 
       - name: Install conda-tasks (editable)
-        run: pip install --no-build-isolation --no-deps -e .
+        run: conda pypi install -e .
 
       - name: Build docs
         run: conda task run docs
