@@ -26,8 +26,11 @@ jobs:
           activate-environment: test
           channels: conda-forge
 
-      - name: Install conda-pypi
-        run: conda install -n base -y -c conda-forge "conda>=26.1" "conda-pypi>=0.4"
+      - name: Install conda-pypi and conda-tasks deps in base
+        run: |
+          conda install -n base -y -c conda-forge \
+            "conda>=26.1" "conda-pypi>=0.4" \
+            pyyaml jinja2 platformdirs tomlkit
 
       - name: Install test dependencies
         run: conda install -y pytest pytest-cov
