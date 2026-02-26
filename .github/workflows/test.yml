@@ -33,7 +33,9 @@ jobs:
         run: conda install -y pytest pytest-cov
 
       - name: Install conda-tasks (editable)
-        run: conda pypi install -e .
+        run: |
+          conda pypi install -e .
+          conda run -n base conda pypi install -e .
 
       - name: Run tests
         run: conda task run test
