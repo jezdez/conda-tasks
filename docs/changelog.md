@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Initial implementation of `conda task` subcommand
-- Support for `conda-tasks.yml`, `pixi.toml`, `pyproject.toml`, and `.condarc`
+- Support for `pixi.toml`, `conda.toml`, `pyproject.toml`, and `.condarc`
 - Task dependency graphs with topological sorting
 - Jinja2 template rendering with `conda.*` context variables
 - Task argument system with defaults

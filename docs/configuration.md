@@ -18,34 +18,28 @@
 
 ## File formats
 
-conda-tasks reads from five file formats, checked in this order.
+conda-tasks reads from four file formats, checked in this order.
 
 ::::{tab-set}
 
-:::{tab-item} YAML
+:::{tab-item} pixi.toml
 
-The canonical format (`conda-tasks.yml`). Top-level `tasks:` key with nested task definitions.
+Reads the `[tasks]` and `[target.*.tasks]` tables from an existing pixi manifest.
 
-```yaml
-tasks:
-  build:
-    cmd: "python -m build"
-    depends-on: [compile]
-    description: "Build the package"
-    inputs: ["src/**/*.py"]
-    outputs: ["dist/"]
-    env:
-      PYTHONPATH: "src"
-    target:
-      win-64:
-        cmd: "python -m build --wheel"
+```toml
+[tasks]
+build = "python -m build"
+test = { cmd = "pytest", depends-on = ["build"] }
+
+[target.win-64.tasks]
+build = "python -m build --wheel"
 ```
 
 :::
 
-:::{tab-item} TOML
+:::{tab-item} conda.toml
 
-The canonical TOML format (`conda-tasks.toml`). Same table structure as `pixi.toml`.
+The canonical conda-native TOML format. Same table structure as `pixi.toml`.
 
 ```toml
 [tasks]
@@ -65,34 +59,20 @@ build = "python -m build --wheel"
 
 :::
 
-:::{tab-item} pixi.toml
-
-Reads the `[tasks]` and `[target.*.tasks]` tables from an existing pixi manifest.
-
-```toml
-[tasks]
-build = "python -m build"
-test = { cmd = "pytest", depends-on = ["build"] }
-
-[target.win-64.tasks]
-build = "python -m build --wheel"
-```
-
-:::
-
 :::{tab-item} pyproject.toml
 
-Reads from `[tool.conda-tasks.tasks]`, falling back to `[tool.pixi.tasks]`.
+Reads from `[tool.conda.tasks]` (preferred), falling back to
+`[tool.conda-tasks.tasks]` (legacy) or `[tool.pixi.tasks]`.
 
 ```toml
-[tool.conda-tasks.tasks]
+[tool.conda.tasks]
 build = "python -m build"
 
-[tool.conda-tasks.tasks.test]
+[tool.conda.tasks.test]
 cmd = "pytest"
 depends-on = ["build"]
 
-[tool.conda-tasks.target.win-64.tasks]
+[tool.conda.target.win-64.tasks]
 build = "python -m build --wheel"
 ```
 
@@ -120,37 +100,38 @@ The setting is registered as `conda_tasks` (with `conda-tasks` accepted as an al
 
 ## Argument definitions
 
-```yaml
-tasks:
-  test:
-    cmd: "pytest {{ path }} {{ flags }}"
-    args:
-      - arg: path
-        default: "tests/"
-      - arg: flags
-        default: "-v"
+```toml
+[tasks.test]
+cmd = "pytest {{ path }} {{ flags }}"
+args = [
+  { arg = "path", default = "tests/" },
+  { arg = "flags", default = "-v" },
+]
 ```
 
 ## Dependency definitions
 
 Simple list:
 
-```yaml
-depends-on: [compile, lint]
+```toml
+[tasks.check]
+depends-on = ["compile", "lint"]
 ```
 
 With arguments:
 
-```yaml
-depends-on:
-  - task: test
-    args: ["tests/unit/"]
+```toml
+[tasks.check]
+depends-on = [
+  { task = "test", args = ["tests/unit/"] },
+]
 ```
 
 With environment:
 
-```yaml
-depends-on:
-  - task: test
-    environment: "py311"
+```toml
+[tasks.check]
+depends-on = [
+  { task = "test", environment = "py311" },
+]
 ```

@@ -49,7 +49,7 @@ conda-tasks is a task runner, not a package manager. It does not create
 environments or install dependencies for you -- that is conda's job. This
 separation is intentional: your environment definition lives in one place
 (`environment.yml`, `conda create`, etc.) and your task definitions live in
-another (`conda-tasks.yml`).
+another (`conda.toml`).
 
 Create the environment with the tools your tasks will need:
 
@@ -68,32 +68,7 @@ without duplicating any of that machinery.
 
 ## 3. Define your tasks
 
-Create a `conda-tasks.yml` (or `conda-tasks.toml` if you prefer TOML) in the
-project root:
-
-::::{tab-set}
-
-:::{tab-item} YAML
-
-```yaml
-tasks:
-  test:
-    cmd: "pytest tests/ -v"
-    description: "Run the test suite"
-  lint:
-    cmd: "ruff check src/"
-    description: "Lint the source code"
-  format:
-    cmd: "ruff format src/ tests/"
-    description: "Auto-format all Python files"
-  check:
-    depends-on: [lint, test]
-    description: "Run all checks"
-```
-
-:::
-
-:::{tab-item} TOML
+Create a `conda.toml` in the project root:
 
 ```toml
 [tasks]
@@ -106,10 +81,6 @@ depends-on = ["lint", "test"]
 description = "Run all checks"
 ```
 
-:::
-
-::::
-
 ## 4. Run tasks
 
 List available tasks:
@@ -119,7 +90,7 @@ conda task list
 ```
 
 ```text
-Tasks from /path/to/myproject/conda-tasks.yml:
+Tasks from /path/to/myproject/conda.toml:
 
   check   Run all checks  [depends: lint, test]
   format  Auto-format all Python files
@@ -144,13 +115,12 @@ conda task run check
 Avoid re-running expensive tasks when nothing has changed by declaring
 inputs and outputs:
 
-```yaml
-tasks:
-  test:
-    cmd: "pytest tests/ -v"
-    description: "Run the test suite"
-    inputs: ["src/**/*.py", "tests/**/*.py"]
-    outputs: []
+```toml
+[tasks.test]
+cmd = "pytest tests/ -v"
+description = "Run the test suite"
+inputs = ["src/**/*.py", "tests/**/*.py"]
+outputs = []
 ```
 
 On the second run with unchanged files you will see:
@@ -161,16 +131,14 @@ On the second run with unchanged files you will see:
 
 ## 6. Add platform-specific tasks
 
-If your project needs platform-specific commands, use the `target` field:
+If your project needs platform-specific commands, use the `target` key:
 
-```yaml
-tasks:
-  clean:
-    cmd: "rm -rf build/ dist/"
-    description: "Clean build artifacts"
-    target:
-      win-64:
-        cmd: "rd /s /q build dist"
+```toml
+[tasks]
+clean = { cmd = "rm -rf build/ dist/", description = "Clean build artifacts" }
+
+[target.win-64.tasks]
+clean = "rd /s /q build dist"
 ```
 
 ## 7. Run in a different environment
@@ -188,7 +156,7 @@ This activates `some-other-env` for the duration of the task, just like
 
 - conda-tasks is a task runner -- environments and dependencies are managed
   separately by conda
-- Tasks are defined in `conda-tasks.yml` (or other supported formats)
+- Tasks are defined in `conda.toml` (or other supported formats)
 - Tasks can depend on each other, forming an execution graph
 - Caching and platform overrides help keep workflows fast and portable
 - The `-n` flag lets you target any conda environment

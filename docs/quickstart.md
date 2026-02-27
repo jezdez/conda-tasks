@@ -24,31 +24,12 @@ pixi global install conda-tasks
 
 ## Your first task file
 
-Create a task file in your project root:
-
-::::{tab-set}
-
-:::{tab-item} YAML
-
-```yaml
-tasks:
-  hello:
-    cmd: "echo Hello from conda-tasks!"
-    description: "A simple hello world task"
-```
-
-:::
-
-:::{tab-item} TOML
+Create a `conda.toml` in your project root:
 
 ```toml
 [tasks]
 hello = { cmd = "echo Hello from conda-tasks!", description = "A simple hello world task" }
 ```
-
-:::
-
-::::
 
 Run it:
 
@@ -60,34 +41,11 @@ conda task run hello
 
 Tasks can depend on other tasks:
 
-::::{tab-set}
-
-:::{tab-item} YAML
-
-```yaml
-tasks:
-  compile:
-    cmd: "gcc -o main main.c"
-    description: "Compile the program"
-  test:
-    cmd: "./main --test"
-    depends-on: [compile]
-    description: "Run tests"
-```
-
-:::
-
-:::{tab-item} TOML
-
 ```toml
 [tasks]
 compile = { cmd = "gcc -o main main.c", description = "Compile the program" }
 test = { cmd = "./main --test", depends-on = ["compile"], description = "Run tests" }
 ```
-
-:::
-
-::::
 
 Running `conda task run test` will first run `compile`, then `test`.
 
@@ -101,11 +59,10 @@ conda task list
 
 conda-tasks automatically detects task definitions from these files (in order):
 
-1. `conda-tasks.yml` -- canonical YAML format
-2. `conda-tasks.toml` -- canonical TOML format (same structure as pixi.toml)
-3. `pixi.toml` -- reads the `[tasks]` table directly
-4. `pyproject.toml` -- reads `[tool.conda-tasks.tasks]` or `[tool.pixi.tasks]`
-5. `.condarc` -- reads `plugins.conda_tasks.tasks` (via conda's settings API)
+1. `pixi.toml` -- reads the `[tasks]` table directly
+2. `conda.toml` -- canonical TOML format (same structure as pixi.toml)
+3. `pyproject.toml` -- reads `[tool.conda.tasks]`, `[tool.conda-tasks.tasks]`, or `[tool.pixi.tasks]`
+4. `.condarc` -- reads `plugins.conda_tasks.tasks` (via conda's settings API)
 
 ## Running in a specific environment
 

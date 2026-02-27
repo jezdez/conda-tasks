@@ -26,7 +26,7 @@ before executing the task. conda-tasks separates these concerns:
 |---|---|---|
 | Define dependencies | `pixi.toml` `[dependencies]` | `environment.yml`, `conda create`, etc. |
 | Solve and install | `pixi run` (implicit) | `conda install`, `conda env create` |
-| Define tasks | `pixi.toml` `[tasks]` | `conda-tasks.yml` (or `pixi.toml`, `pyproject.toml`, `.condarc`) |
+| Define tasks | `pixi.toml` `[tasks]` | `conda.toml` (or `pixi.toml`, `pyproject.toml`, `.condarc`) |
 | Run tasks | `pixi run <task>` | `conda task run <task>` |
 
 This separation is intentional. Conda already has mature, well-tested tools
@@ -58,7 +58,7 @@ the task-running side:
 | Jinja2 templates | MiniJinja | Jinja2 |
 | Context variables | `pixi.*` | `conda.*` (+ `pixi.*` alias) |
 | Caching (inputs/outputs) | Yes | Yes |
-| Platform overrides | `[target.<platform>.tasks]` | Same + `target:` in YAML |
+| Platform overrides | `[target.<platform>.tasks]` | Same |
 | Environment variables | Yes | Yes |
 | Clean environment | Yes | Yes |
 | Hidden tasks (`_` prefix) | Yes | Yes |
@@ -76,7 +76,7 @@ the task-running side:
 - Shell: conda-tasks uses the native platform shell via `subprocess` instead
   of `deno_task_shell`. Cross-platform commands are handled via platform-specific
   task overrides or Jinja2 conditionals.
-- File formats: conda-tasks reads from `conda-tasks.yml`, `pixi.toml`,
+- File formats: conda-tasks reads from `conda.toml`, `pixi.toml`,
   `pyproject.toml`, and `.condarc`. pixi only reads from `pixi.toml` and
   `pyproject.toml`.
 - Conda integration: tasks can target specific conda environments using

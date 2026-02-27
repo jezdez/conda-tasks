@@ -9,9 +9,6 @@ File format detection, parsing, and normalization.
 .. automodule:: conda_tasks.parsers.base
    :members:
 
-.. automodule:: conda_tasks.parsers.yaml
-   :members:
-
 .. automodule:: conda_tasks.parsers.toml
    :members:
 

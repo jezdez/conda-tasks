@@ -7,18 +7,15 @@ conda task run test     # builds first, then tests
 conda task list         # shows all available tasks
 ```
 
-```yaml
-# conda-tasks.yml
-tasks:
-  build:
-    cmd: "python -m build"
-  test:
-    cmd: "pytest tests/ -v"
-    depends-on: [build]
-  lint:
-    cmd: "ruff check ."
-  check:
-    depends-on: [test, lint]
+```toml
+# conda.toml
+[tasks]
+build = "python -m build"
+test = { cmd = "pytest tests/ -v", depends-on = ["build"] }
+lint = "ruff check ."
+
+[tasks.check]
+depends-on = ["test", "lint"]
 ```
 
 ---
@@ -52,7 +49,7 @@ environment targeting, and more.
 :link: configuration
 :link-type: doc
 
-All task fields, file formats (`conda-tasks.yml`, `conda-tasks.toml`,
+All task fields, file formats (`conda.toml`,
 `pixi.toml`, `pyproject.toml`, `.condarc`), and examples.
 :::
 
