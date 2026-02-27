@@ -47,6 +47,6 @@ class NoTaskFileError(CondaTasksError):
     def __init__(self, search_dir: str):
         super().__init__(
             f"No task file found in '{search_dir}'. "
-            "Create a conda-tasks.yml, pixi.toml, or pyproject.toml "
+            "Create a conda.toml, pixi.toml, or pyproject.toml "
             "with task definitions."
         )

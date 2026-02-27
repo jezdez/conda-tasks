@@ -18,13 +18,13 @@ def execute_add(args: argparse.Namespace) -> int:
     if file_path is None:
         file_path = detect_task_file()
         if file_path is None:
-            file_path = Path.cwd() / "conda-tasks.yml"
+            file_path = Path.cwd() / "conda.toml"
 
     parser = get_parser(file_path)
     if parser is None:
-        from ..parsers.yaml import CondaTasksYAMLParser
+        from ..parsers.toml import CondaTomlParser
 
-        parser = CondaTasksYAMLParser()
+        parser = CondaTomlParser()
 
     depends = [TaskDependency(task=d) for d in (args.depends_on or [])]
     task = Task(

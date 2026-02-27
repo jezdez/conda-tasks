@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from ..parsers import detect_and_parse
 from ..parsers.toml import tasks_to_toml
-from ..parsers.yaml import tasks_to_yaml
 
 if TYPE_CHECKING:
     import argparse
@@ -20,12 +19,8 @@ def execute_export(args: argparse.Namespace) -> int:
 
     quiet = getattr(args, "quiet", False)
     output: Path | None = getattr(args, "output", None)
-    export_format: str = getattr(args, "export_format", "yaml")
 
-    if export_format == "toml":
-        text = tasks_to_toml(tasks)
-    else:
-        text = tasks_to_yaml(tasks)
+    text = tasks_to_toml(tasks)
 
     if output is not None:
         output.write_text(text, encoding="utf-8")

@@ -105,18 +105,11 @@ def configure_parser(parser: argparse.ArgumentParser) -> None:
 
     export_parser = sub.add_parser(
         "export",
-        help="Export tasks to conda-tasks.yml or conda-tasks.toml.",
+        help="Export tasks to conda.toml format.",
         add_help=False,
     )
     add_parser_help(export_parser)
     add_output_and_prompt_options(export_parser)
-    export_parser.add_argument(
-        "--format",
-        choices=["yaml", "toml"],
-        default="yaml",
-        dest="export_format",
-        help="Output format (default: yaml).",
-    )
     export_parser.add_argument(
         "-o",
         "--output",

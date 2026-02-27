@@ -11,8 +11,7 @@ from .base import TaskFileParser
 from .condarc import CondaRCParser
 from .pixi_toml import PixiTomlParser
 from .pyproject_toml import PyprojectTomlParser
-from .toml import CondaTasksTomlParser
-from .yaml import CondaTasksYAMLParser
+from .toml import CondaTomlParser
 
 if TYPE_CHECKING:
     from ..models import Task
@@ -20,9 +19,8 @@ if TYPE_CHECKING:
 __all__ = ["TaskFileParser", "detect_and_parse", "detect_task_file", "get_parser"]
 
 _SEARCH_ORDER: tuple[str, ...] = (
-    "conda-tasks.yml",
-    "conda-tasks.toml",
     "pixi.toml",
+    "conda.toml",
     "pyproject.toml",
     ".condarc",
 )
@@ -31,9 +29,8 @@ _SEARCH_ORDER: tuple[str, ...] = (
 def _parser_registry() -> list[TaskFileParser]:
     """Return all registered parser instances in detection priority order."""
     return [
-        CondaTasksYAMLParser(),
-        CondaTasksTomlParser(),
         PixiTomlParser(),
+        CondaTomlParser(),
         PyprojectTomlParser(),
         CondaRCParser(),
     ]

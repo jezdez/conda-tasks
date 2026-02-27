@@ -1,4 +1,4 @@
-"""Parser for the conda-tasks.toml canonical TOML format.
+"""Parser for the conda.toml canonical TOML format.
 
 Uses the same structure as pixi.toml tasks:
 
@@ -69,7 +69,7 @@ def _task_to_toml_inline(task: Task) -> str | InlineTable:
 
 
 def tasks_to_toml(tasks: dict[str, Task]) -> str:
-    """Serialize a full task dict to ``conda-tasks.toml`` TOML string."""
+    """Serialize a full task dict to ``conda.toml`` TOML string."""
     doc = tomlkit.document()
 
     task_table = tomlkit.table()
@@ -112,22 +112,22 @@ def tasks_to_toml(tasks: dict[str, Task]) -> str:
     return tomlkit.dumps(doc)
 
 
-class CondaTasksTomlParser(TaskFileParser):
-    """Reads and writes ``conda-tasks.toml`` files.
+class CondaTomlParser(TaskFileParser):
+    """Reads and writes ``conda.toml`` files.
 
     Structure is identical to pixi.toml task tables:
     ``[tasks]`` for definitions, ``[target.<platform>.tasks]`` for overrides.
     """
 
     extensions: ClassVar[tuple[str, ...]] = (".toml",)
-    filenames: ClassVar[tuple[str, ...]] = ("conda-tasks.toml",)
+    filenames: ClassVar[tuple[str, ...]] = ("conda.toml",)
 
     def can_handle(self, path: Path) -> bool:
-        """Return True if *path* is a recognized ``conda-tasks.toml`` filename."""
+        """Return True if *path* is a recognized ``conda.toml`` filename."""
         return path.name in self.filenames
 
     def parse(self, path: Path) -> dict[str, Task]:
-        """Parse a ``conda-tasks.toml`` file including platform overrides."""
+        """Parse a ``conda.toml`` file including platform overrides."""
         try:
             data = tomlkit.loads(path.read_text(encoding="utf-8")).unwrap()
         except Exception as exc:

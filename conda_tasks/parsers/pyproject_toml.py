@@ -1,10 +1,12 @@
 """Parser for pyproject.toml task definitions.
 
 Reads from:
-- ``[tool.conda-tasks.tasks]`` (preferred)
+- ``[tool.conda.tasks]`` (preferred)
+- ``[tool.conda-tasks.tasks]`` (legacy alias)
 - ``[tool.pixi.tasks]`` (fallback for pixi compatibility)
 
 Platform overrides:
+- ``[tool.conda.target.<platform>.tasks]``
 - ``[tool.conda-tasks.target.<platform>.tasks]``
 - ``[tool.pixi.target.<platform>.tasks]``
 """
@@ -42,24 +44,34 @@ class PyprojectTomlParser(TaskFileParser):
             return False
         tool = data.get("tool", {})
         return bool(
-            tool.get("conda-tasks", {}).get("tasks")
+            tool.get("conda", {}).get("tasks")
+            or tool.get("conda-tasks", {}).get("tasks")
             or tool.get("pixi", {}).get("tasks")
         )
 
     def parse(self, path: Path) -> dict[str, Task]:
-        """Parse task definitions from ``[tool.conda-tasks]`` or ``[tool.pixi]``."""
+        """Parse tasks from conda, conda-tasks, or pixi tool tables."""
         try:
             data = tomlkit.loads(path.read_text(encoding="utf-8")).unwrap()
         except Exception as exc:
             raise TaskParseError(str(path), str(exc)) from exc
 
         tool = data.get("tool", {})
+        conda_section = tool.get("conda", {})
         conda_tasks_section = tool.get("conda-tasks", {})
         pixi_section = tool.get("pixi", {})
 
-        raw_tasks = conda_tasks_section.get("tasks") or pixi_section.get("tasks") or {}
+        raw_tasks = (
+            conda_section.get("tasks")
+            or conda_tasks_section.get("tasks")
+            or pixi_section.get("tasks")
+            or {}
+        )
         target_section = (
-            conda_tasks_section.get("target") or pixi_section.get("target") or {}
+            conda_section.get("target")
+            or conda_tasks_section.get("target")
+            or pixi_section.get("target")
+            or {}
         )
 
         if not isinstance(raw_tasks, dict):
@@ -93,11 +105,11 @@ class PyprojectTomlParser(TaskFileParser):
     def add_task(self, path: Path, name: str, task: Task) -> None:
         """Not supported — ``pyproject.toml`` is read-only."""
         raise NotImplementedError(
-            "Writing to pyproject.toml is not supported. Use conda-tasks.yml instead."
+            "Writing to pyproject.toml is not supported. Use conda.toml instead."
         )
 
     def remove_task(self, path: Path, name: str) -> None:
         """Not supported — ``pyproject.toml`` is read-only."""
         raise NotImplementedError(
-            "Writing to pyproject.toml is not supported. Use conda-tasks.yml instead."
+            "Writing to pyproject.toml is not supported. Use conda.toml instead."
         )

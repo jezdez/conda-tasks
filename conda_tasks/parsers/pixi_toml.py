@@ -72,11 +72,11 @@ class PixiTomlParser(TaskFileParser):
     def add_task(self, path: Path, name: str, task: Task) -> None:
         """Not supported — ``pixi.toml`` is read-only."""
         raise NotImplementedError(
-            "Writing to pixi.toml is not supported. Use conda-tasks.yml instead."
+            "Writing to pixi.toml is not supported. Use conda.toml instead."
         )
 
     def remove_task(self, path: Path, name: str) -> None:
         """Not supported — ``pixi.toml`` is read-only."""
         raise NotImplementedError(
-            "Writing to pixi.toml is not supported. Use conda-tasks.yml instead."
+            "Writing to pixi.toml is not supported. Use conda.toml instead."
         )
