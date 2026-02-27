@@ -9,14 +9,15 @@
   is a thin re-export shim (`configure_parser`, `execute`, `generate_parser`).
 
 - Parser implementations use submodules, not subpackages. The canonical
-  format parsers live at `conda_tasks/parsers/yaml.py` and
-  `conda_tasks/parsers/toml.py` — plain modules, not directories with
-  `__init__.py`. Only create a subpackage when there are multiple files
-  to group.
+  format parsers live at `conda_tasks/parsers/toml.py`,
+  `conda_tasks/parsers/pixi_toml.py`, `conda_tasks/parsers/pyproject_toml.py`,
+  and `conda_tasks/parsers/condarc.py` — plain modules, not directories
+  with `__init__.py`. Only create a subpackage when there are multiple
+  files to group.
 
 - Tests mirror the source structure. Tests for `conda_tasks/cli/run.py`
-  live in `tests/cli/test_run.py`, tests for `conda_tasks/parsers/yaml.py`
-  live in `tests/parsers/test_yaml.py`, etc. Test module names match their
+  live in `tests/cli/test_run.py`, tests for `conda_tasks/parsers/toml.py`
+  live in `tests/parsers/test_toml.py`, etc. Test module names match their
   corresponding source module names.
 
 ## Imports
@@ -106,11 +107,23 @@
   itself. In docstrings, use `*param*` for parameter names (standard
   Sphinx convention) but avoid bold elsewhere.
 
-- Keep `sphinx-design` tab labels short. Use "YAML" / "TOML" instead
-  of full filenames like "conda-tasks.yml" / "conda-tasks.toml" when
-  the tab content already identifies the file. This prevents tab
-  overflow on narrow viewports.
+- Keep `sphinx-design` tab labels short. Use "TOML" / "pyproject.toml"
+  instead of full filenames when the tab content already identifies the
+  file. This prevents tab overflow on narrow viewports.
 
 - The API reference is split into focused sub-pages by concern (models,
   parsers, execution, context) rather than a single monolithic page.
   The index uses `sphinx-design` grid cards for navigation.
+
+## Parser search order
+
+- The parser registry searches for task manifests in this order:
+  1. `pixi.toml` — pixi-native format (task compatibility)
+  2. `conda.toml` — conda-native task manifest
+  3. `pyproject.toml` — embedded under `[tool.conda.tasks]`,
+     `[tool.conda-tasks.tasks]` (legacy), or `[tool.pixi.tasks]`
+  4. `.condarc` — tasks defined via conda settings
+
+- All parsers produce task models via the same base interface.
+  Parser-specific logic stays in the parser; downstream code only
+  depends on the model.
